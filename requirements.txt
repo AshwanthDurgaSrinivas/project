@@ -6,3 +6,5 @@ flask_cors
 transformers
 torch
 gunicorn
+sentencepiece
+os
