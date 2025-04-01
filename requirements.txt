@@ -7,4 +7,3 @@ transformers
 torch
 gunicorn
 sentencepiece
-os
