@@ -1,0 +1,7 @@
+huggingface_hub
+flask
+request
+jsonify
+flask_cors
+transformers
+torch
