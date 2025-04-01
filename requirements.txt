@@ -1,6 +1,6 @@
 huggingface_hub
 flask
-request
+requests
 jsonify
 flask_cors
 transformers
