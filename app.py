@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Enable CORS for frontend communication
 CORS(app,origins=["http://localhost:5173"]) 
 # Load the trained model
-tokenizer = T5Tokenizer.from_pretrained("srinu590/project")
+tokenizer = T5Tokenizer.from_pretrained("srinu590/t5-small")
 model = T5ForConditionalGeneration.from_pretrained("srinu590/project")
 
 @app.route('/predict', methods=['POST'])
