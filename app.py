@@ -8,7 +8,7 @@ CORS(app)
 
 tokenizer = T5Tokenizer.from_pretrained("srinu590/t5-small")
 model = T5ForConditionalGeneration.from_pretrained("srinu590/t5-small")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 model.to(device)
 
 @app.route('/predict', methods=['POST'])
