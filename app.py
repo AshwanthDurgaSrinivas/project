@@ -2,35 +2,38 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 import torch
-import os
 
 app = Flask(__name__)
-# Enable CORS for frontend communication
-CORS(app,origins=["http://localhost:5173"]) 
-# Load the trained model
+CORS(app)
+
 tokenizer = T5Tokenizer.from_pretrained("srinu590/t5-small")
-model = T5ForConditionalGeneration.from_pretrained("srinu590/project")
+model = T5ForConditionalGeneration.from_pretrained("srinu590/t5-small")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
 
 @app.route('/predict', methods=['POST'])
-
 def predict():
-    data = request.json
-    symptoms = data.get("symptoms", [])
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
 
-    if not symptoms:
-        return jsonify({"error": "No symptoms provided"}), 400
+        data = request.get_json()
+        symptoms = data.get("symptoms", [])
 
-    input_text = ' '.join(symptoms)
-    input_ids = tokenizer.encode(input_text, return_tensors="pt")
+        if not symptoms or not isinstance(symptoms, list):
+            return jsonify({"error": "Invalid symptoms format"}), 400
 
-    with torch.no_grad():
-        output_ids = model.generate(input_ids)
-        output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+        input_text = ' '.join(symptoms)
+        input_ids = tokenizer.encode(input_text, return_tensors="pt").to(device)
 
-    return jsonify({"prediction": output_text})
+        with torch.no_grad():
+            output_ids = model.generate(input_ids)
+            output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
+        return jsonify({"prediction": output_text})
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
