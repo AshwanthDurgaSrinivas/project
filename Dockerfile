@@ -4,6 +4,10 @@ FROM python:3.9
 # Set working directory in container
 WORKDIR /app
 
+# Create a non-root user and switch to it
+RUN useradd -m myuser
+USER myuser
+
 # Copy and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
